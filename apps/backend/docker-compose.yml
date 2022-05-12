@@ -1,0 +1,17 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    command:
+      - flask
+      - run
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ~/.aws:/root/.aws
+      - .:/usr/src/app/
+      - logvolume01:/var/log
+volumes:
+  logvolume01: {}
