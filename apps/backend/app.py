@@ -8,4 +8,8 @@ def hello_world():
 
 @app.route("/upload")
 def upload():
-    return "<p>Hello, World!</p>"
+    return "/upload"
+
+@app.route("/download")
+def upload():
+    return "/download"
