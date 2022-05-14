@@ -3,7 +3,8 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      # default port 5000, just in case it's conflict with local port in Mac
+      - "8088:5000"
     command:
       - flask
       - run
