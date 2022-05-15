@@ -1,9 +1,11 @@
 import boto3
+from flask import Flask
+import logging
 import os
 
-from flask import Flask
-
 app = Flask(__name__)
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME', 'my-ssa-demo')
 S3_POST_SIGNED_URL_EXPIRES_IN = 10
@@ -15,24 +17,42 @@ def hello_world():
 
 @app.route("/requestUpload/<img_name>")
 def upload(img_name):
-    s3_client = boto3.client('s3')
-    return s3_client.generate_presigned_post(
-        Bucket = S3_BUCKET_NAME,
-        Key = get_s3_object_key(img_name),
-        ExpiresIn = S3_POST_SIGNED_URL_EXPIRES_IN
-    )
+    object_key = get_s3_object_key(img_name)
+    return generate_presigned_url(object_key, 'put')
 
 @app.route("/requestDownload/<img_name>")
 def download(img_name):
-    s3_client = boto3.client('s3')
-    return s3_client.generate_presigned_url(
-        ClientMethod='get_object', 
-        Params={
-            'Bucket': S3_BUCKET_NAME, 
-            'Key': get_s3_object_key(img_name)
-        },
-        ExpiresIn=S3_GET_SIGNED_URL_EXPIRES_IN)
+    object_key = get_s3_object_key(img_name)
+    return generate_presigned_url(object_key)
 
+def generate_presigned_url(object_key, action='get'):
+    """
+    Generate a presigned Amazon S3 URL that can be used to perform an action.
+
+    :param object_key: The name of the S3 object key.
+    :param action: The action to 'get' or 'put' oboject with the presigned url.
+    :return: The presigned URL.
+    """
+    client_method = 'get_object' if action == 'get' else 'put_object'
+    expires_in = S3_GET_SIGNED_URL_EXPIRES_IN if action == 'get' else S3_POST_SIGNED_URL_EXPIRES_IN
+    method_parameters = {
+        'Bucket': S3_BUCKET_NAME,
+        'Key': object_key
+    }
+
+    try:
+        s3_client = boto3.client('s3')
+        url = s3_client.generate_presigned_url(
+            ClientMethod=client_method,
+            Params=method_parameters,
+            ExpiresIn=expires_in
+        )
+        logger.info("Got presigned URL: %s", url)
+    except ClientError:
+        logger.exception(
+            "Couldn't get a presigned URL for client method '%s'.", client_method)
+        raise
+    return url
 
 def get_s3_object_key(img_name):
     """
@@ -41,6 +61,9 @@ def get_s3_object_key(img_name):
     An example format of the object key would look like 'userid/yymmdd/image_name'
 
     For demo purpose, it simply returns the original image name.
+
+    :param img_name: The image name to generate S3 object key.
+    :return: An S3 object key
     """
     s3_object_key = img_name
     return s3_object_key
