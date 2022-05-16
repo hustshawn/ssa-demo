@@ -5,8 +5,7 @@ const backendServer = "http://localhost:8088"
 const App = () => {
 
   const handleImportImage = async (e) => {
-    const downloadInfo = document.getElementById("downloadInfo");
-    downloadInfo.style.display = "none";
+    showDownloadInfo(false);
     if (e.target.files) {
       let imageFile = e.target.files[0];
       console.log("ImageFile:", imageFile);
@@ -24,10 +23,12 @@ const App = () => {
   };
 
   const handleResizeFactorChange = async (e) => {
+    showDownloadInfo(false);
     let resizeFactor = e.target.value / 100;
     console.log("Resize factor:", resizeFactor);
     let imageToResize = document.getElementById("origImgPreview");
     resizeImage(imageToResize, resizeFactor);
+
   };
 
   const resizeImage = (imgToResize, resizingFactor=0.5) => {
@@ -46,6 +47,15 @@ const App = () => {
     ctx.drawImage(imgToResize, 0, 0, width, height);
     console.log("Resized size: ", width, height);
     return
+  }
+
+  const showDownloadInfo = (display=false) => {
+    const downloadInfo = document.getElementById("downloadInfo");
+    if (!display) {
+      downloadInfo.style.display = "none";
+    }else {
+      downloadInfo.style.display = "block";
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -74,8 +84,7 @@ const App = () => {
           downloadLink.href = imgDownloadUrl
           console.log("HyperLink:", downloadLink.href)
           // Show download info after get the signedUrl
-          const downloadInfo = document.getElementById("downloadInfo");
-          downloadInfo.style.display = "block";
+          showDownloadInfo(true);
         }
       }, file.type, 0.9
     );
