@@ -10,14 +10,6 @@
       "StackName": "amplify-presignedurlupload-dev-162226",
       "StackId": "arn:aws:cloudformation:ap-southeast-1:414879998402:stack/amplify-presignedurlupload-dev-162226/288b4940-d428-11ec-9674-0691223506c6",
       "AmplifyAppId": "d2whns4g1e30dc"
-    },
-    "categories": {
-      "hosting": {
-        "amplifyhosting": {
-          "appId": "d2whns4g1e30dc",
-          "type": "manual"
-        }
-      }
     }
   }
 }
