@@ -5,17 +5,42 @@ const backendServer = "http://localhost:8088"
 const App = () => {
 
   const handleImportImage = async (e) => {
-    const file = e.target.files[0];
-    var reader = new FileReader();
-    var img = document.getElementById("origImgPreview")
-    reader.onload = function(e) {img.src = e.target.result}
-    reader.readAsDataURL(file);
+      
+    if (e.target.files) {
+      let imageFile = e.target.files[0];
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        let img = document.createElement("img");
+        img.onload = function (event) {
+              document.getElementById("origImgPreview").src = img.src;
+              // Dynamically create a canvas element
+              let canvas = document.createElement("canvas");
+              let ctx = canvas.getContext("2d");
+
+              let width = img.width;
+              let height = img.height;
+              // let resizeRate = 0.7;
+              let resizeRate = document.getElementById("resizeRate").value / 100;
+              console.log(resizeRate);
+              width = 1024 * resizeRate;
+              height = 576 * resizeRate;
+              console.log(width, height);
+
+              canvas.width = width;
+              canvas.height = height;
+              ctx.drawImage(img, 0, 0, width, height);
+              console.log(width, height);
+              // Show resized image in preview element
+              let dataurl = canvas.toDataURL(imageFile.type);
+              document.getElementById("resizedImgPreview").src = dataurl;
+          }
+          img.src = e.target.result;
+      }
+      reader.readAsDataURL(imageFile);
+    }
   };
 
   const resizeImage = (imgToResize, resizingFactor=0.5) => {
-    // var canvas = document.createElement("canvas");
-    // var ctx = canvas.getContext("2d");
-    // ctx.drawImage(imgToResize, 0, 0);
     return imgToResize
   }
 
@@ -45,34 +70,42 @@ const App = () => {
     const downloadLink = document.getElementById("download-link");
     downloadLink.href = imgDownloadUrl
     console.log("HyperLink:", downloadLink.href)
+    // Show download info after get the signedUrl
+    var downloadInfo = document.getElementById("downloadInfo");
+    downloadInfo.style.display = "block";
   }
 
   return (
     <div className="App">
       <div style={styles.container}>
         <h2>Image Resizer Demo </h2>
+        <label>Upload Image: </label>
         <input id="image" type="file" accept="image/*" onChange={handleImportImage} />
-        {/* <p>Upload percentage: <span id="uploadPercent"></span> </p> */}
-        <h3>Preview</h3>
+        <h3>Original Image Preview</h3>
         <img src="" id="origImgPreview" alt="" />
         <br></br>
         <p> Define the new size of your image using: </p>
-        <img src="" id="resizedImgPreview" alt="" />
-        <button style={styles.button} onClick={handleSubmit}>Submit</button>
-        <h2>Download Image</h2>
-        <p>Download <a id="download-link" href="http://example.com">link</a> <br></br><span>Note: The download link will expire in certain period.</span></p>
+        <input type="number" id="resizeRate" name="resizeRate" min="0" max="100" step="10" defaultValue="50" />%
+
+        <div>
+          <h3>Resized Image Preview</h3>
+          <img src="" id="resizedImgPreview" alt="" />
+        </div>
+        <button style={styles.button} onClick={handleSubmit}>Upload</button>
+        <div id="downloadInfo" style={styles.downloadInfo} >
+          <h2>Download Image</h2>
+          <p>Download <a id="download-link" href="http://example.com">link</a> <br></br><span>Note: The download link will expire in certain period.</span></p>
+        </div>
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: { width: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20 },
-  todo: {  marginBottom: 15 },
+  container: { margin: '0 auto', justifyContent: 'center', padding: 20 },
   input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
-  todoName: { fontSize: 20, fontWeight: 'bold' },
-  todoDescription: { marginBottom: 0 },
-  button: { cursor: 'pointer', backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
+  button: { cursor: 'pointer', backgroundColor: 'black', color: 'white', outline: 'none', padding: '5px 5px', width: '147px', heigh: '35px' },
+  downloadInfo: {display: 'none'}
 }
 
 export default App
