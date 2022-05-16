@@ -8,13 +8,13 @@ const App = () => {
       
     if (e.target.files) {
       let imageFile = e.target.files[0];
+      console.log("ImageFile:", imageFile);
       let reader = new FileReader();
       reader.onload = (e) => {
         let img = document.createElement("img");
         img.onload = function (event) {
               document.getElementById("origImgPreview").src = img.src;
-              // Dynamically create a canvas element
-              let canvas = document.createElement("canvas");
+              let canvas = document.getElementById("canvas");
               let ctx = canvas.getContext("2d");
 
               let width = img.width;
@@ -31,8 +31,8 @@ const App = () => {
               ctx.drawImage(img, 0, 0, width, height);
               console.log(width, height);
               // Show resized image in preview element
-              let dataurl = canvas.toDataURL(imageFile.type);
-              document.getElementById("resizedImgPreview").src = dataurl;
+              // let dataurl = canvas.toDataURL(imageFile.type);
+              // document.getElementById("resizedImgPreview").src = dataurl;
           }
           img.src = e.target.result;
       }
@@ -46,33 +46,40 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     const file = document.getElementById("image").files[0];
+    const canvas = document.getElementById("canvas");
+
+
     let resizedImage = resizeImage(file);
     const requestUploadUrl = backendServer+'/requestUpload/'+file.name
     const res = await fetch(requestUploadUrl)
     const signedUrl = await res.text()
     console.log("Post SignedUrl: ", signedUrl)
 
-    const arrayBuffer = await resizedImage.arrayBuffer();
-    const blob = new Blob([arrayBuffer], {
-      // type: resizedImage.type
-    });
-    const response = await fetch(signedUrl, {
-      method: "PUT",
-      body: blob,
-      mode: "cors"
-    });
-    console.log("Upload result: ", response.ok)
+    console.log(resizedImage.type);
+    canvas.toBlob(
+      async (blob) => {
+        const response = await fetch(signedUrl, {
+          method: "PUT",
+          body: blob,
+          mode: "cors"
+        });
+        console.log("Upload result: ", response.ok)
 
-    const requestDownloadUrl = backendServer+'/requestDownload/'+file.name
-    const downloadResp = await fetch(requestDownloadUrl)
-    const imgDownloadUrl = await downloadResp.text() 
-    console.log("Download SignedURL:", imgDownloadUrl)
-    const downloadLink = document.getElementById("download-link");
-    downloadLink.href = imgDownloadUrl
-    console.log("HyperLink:", downloadLink.href)
-    // Show download info after get the signedUrl
-    var downloadInfo = document.getElementById("downloadInfo");
-    downloadInfo.style.display = "block";
+        if (response.ok) {
+          const requestDownloadUrl = backendServer+'/requestDownload/'+file.name
+          const downloadResp = await fetch(requestDownloadUrl)
+          const imgDownloadUrl = await downloadResp.text() 
+          console.log("Download SignedURL:", imgDownloadUrl)
+          const downloadLink = document.getElementById("download-link");
+          downloadLink.href = imgDownloadUrl
+          console.log("HyperLink:", downloadLink.href)
+          // Show download info after get the signedUrl
+          var downloadInfo = document.getElementById("downloadInfo");
+          downloadInfo.style.display = "block";
+        }
+      }, resizedImage.type, 0.9
+    );
+
   }
 
   return (
@@ -89,7 +96,7 @@ const App = () => {
 
         <div>
           <h3>Resized Image Preview</h3>
-          <img src="" id="resizedImgPreview" alt="" />
+          <canvas id="canvas"></canvas>
         </div>
         <button style={styles.button} onClick={handleSubmit}>Upload</button>
         <div id="downloadInfo" style={styles.downloadInfo} >
