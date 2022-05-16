@@ -5,7 +5,8 @@ const backendServer = "http://localhost:8088"
 const App = () => {
 
   const handleImportImage = async (e) => {
-      
+    const downloadInfo = document.getElementById("downloadInfo");
+    downloadInfo.style.display = "none";
     if (e.target.files) {
       let imageFile = e.target.files[0];
       console.log("ImageFile:", imageFile);
@@ -13,49 +14,48 @@ const App = () => {
       reader.onload = (e) => {
         let img = document.createElement("img");
         img.onload = function (event) {
-              document.getElementById("origImgPreview").src = img.src;
-              let canvas = document.getElementById("canvas");
-              let ctx = canvas.getContext("2d");
-
-              let width = img.width;
-              let height = img.height;
-              // let resizeRate = 0.7;
-              let resizeRate = document.getElementById("resizeRate").value / 100;
-              console.log(resizeRate);
-              width = 1024 * resizeRate;
-              height = 576 * resizeRate;
-              console.log(width, height);
-
-              canvas.width = width;
-              canvas.height = height;
-              ctx.drawImage(img, 0, 0, width, height);
-              console.log(width, height);
-              // Show resized image in preview element
-              // let dataurl = canvas.toDataURL(imageFile.type);
-              // document.getElementById("resizedImgPreview").src = dataurl;
-          }
-          img.src = e.target.result;
+            document.getElementById("origImgPreview").src = img.src;
+            resizeImage(img);
+        }
+        img.src = e.target.result;
       }
       reader.readAsDataURL(imageFile);
     }
   };
 
+  const handleResizeFactorChange = async (e) => {
+    let resizeFactor = e.target.value / 100;
+    console.log("Resize factor:", resizeFactor);
+    let imageToResize = document.getElementById("origImgPreview");
+    resizeImage(imageToResize, resizeFactor);
+  };
+
   const resizeImage = (imgToResize, resizingFactor=0.5) => {
-    return imgToResize
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    console.log("Image Original size: ", imgToResize.width, imgToResize.height);
+    let resizeRate = document.getElementById("resizeRate").value / 100;
+    console.log(resizeRate);
+
+    let width = imgToResize.width * resizeRate;
+    let height = imgToResize.height * resizeRate;
+
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(imgToResize, 0, 0, width, height);
+    console.log("Resized size: ", width, height);
+    return
   }
 
   const handleSubmit = async (e) => {
     const file = document.getElementById("image").files[0];
     const canvas = document.getElementById("canvas");
-
-
-    let resizedImage = resizeImage(file);
     const requestUploadUrl = backendServer+'/requestUpload/'+file.name
     const res = await fetch(requestUploadUrl)
     const signedUrl = await res.text()
     console.log("Post SignedUrl: ", signedUrl)
 
-    console.log(resizedImage.type);
     canvas.toBlob(
       async (blob) => {
         const response = await fetch(signedUrl, {
@@ -74,12 +74,11 @@ const App = () => {
           downloadLink.href = imgDownloadUrl
           console.log("HyperLink:", downloadLink.href)
           // Show download info after get the signedUrl
-          var downloadInfo = document.getElementById("downloadInfo");
+          const downloadInfo = document.getElementById("downloadInfo");
           downloadInfo.style.display = "block";
         }
-      }, resizedImage.type, 0.9
+      }, file.type, 0.9
     );
-
   }
 
   return (
@@ -92,7 +91,7 @@ const App = () => {
         <img src="" id="origImgPreview" alt="" />
         <br></br>
         <p> Define the new size of your image using: </p>
-        <input type="number" id="resizeRate" name="resizeRate" min="0" max="100" step="10" defaultValue="50" />%
+        <input type="number" id="resizeRate" name="resizeRate" min="0" max="100" step="10" defaultValue="50" onChange={handleResizeFactorChange}/>%
 
         <div>
           <h3>Resized Image Preview</h3>
