@@ -1,4 +1,5 @@
 import boto3
+from botocore.client import Config
 from flask import Flask
 from flask_cors import CORS
 import logging
@@ -44,7 +45,10 @@ def generate_presigned_url(object_key, action='get'):
     }
 
     try:
-        s3_client = boto3.client('s3')
+        s3_client = boto3.client(
+            's3',
+            config=Config(signature_version='s3v4')
+            )
         url = s3_client.generate_presigned_url(
             ClientMethod=client_method,
             Params=method_parameters,
