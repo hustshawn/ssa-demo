@@ -1,8 +1,12 @@
 import "./styles.css";
 
-const backendServer = "http://localhost:8088"
 
 const App = () => {
+
+  let backendHost = "http://my-production-host:8088"
+  if (process.env.NODE_ENV !== 'production') {
+    backendHost = "http://localhost:8088"
+  }
 
   const handleImportImage = async (e) => {
     showDownloadInfo(false);
@@ -61,7 +65,7 @@ const App = () => {
   const handleSubmit = async (e) => {
     const file = document.getElementById("image").files[0];
     const canvas = document.getElementById("canvas");
-    const requestUploadUrl = backendServer+'/requestUpload/'+file.name
+    const requestUploadUrl = backendHost+'/requestUpload/'+file.name
     const res = await fetch(requestUploadUrl)
     const signedUrl = await res.text()
     console.log("Post SignedUrl: ", signedUrl)
@@ -76,7 +80,7 @@ const App = () => {
         console.log("Upload result: ", response.ok)
 
         if (response.ok) {
-          const requestDownloadUrl = backendServer+'/requestDownload/'+file.name
+          const requestDownloadUrl = backendHost+'/requestDownload/'+file.name
           const downloadResp = await fetch(requestDownloadUrl)
           const imgDownloadUrl = await downloadResp.text() 
           console.log("Download SignedURL:", imgDownloadUrl)
