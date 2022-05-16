@@ -7,7 +7,8 @@ const App = () => {
   if (process.env.NODE_ENV !== 'production') {
     backendHost = "http://localhost:8088"
   }
-
+  console.log("Using backendHost:", backendHost);
+  
   const handleImportImage = async (e) => {
     showDownloadInfo(false);
     if (e.target.files) {
