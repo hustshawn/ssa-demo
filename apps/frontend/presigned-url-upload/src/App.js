@@ -1,4 +1,6 @@
 import "./styles.css";
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 
 
 const App = () => {
@@ -8,7 +10,7 @@ const App = () => {
     backendHost = "http://localhost:8088"
   }
   console.log("Using backendHost:", backendHost);
-  
+
   const handleImportImage = async (e) => {
     showDownloadInfo(false);
     if (e.target.files) {
@@ -96,6 +98,7 @@ const App = () => {
   }
 
   return (
+    <Authenticator>
     <div className="App">
       <div style={styles.container}>
         <h2>Image Resizer Demo </h2>
@@ -118,6 +121,7 @@ const App = () => {
         </div>
       </div>
     </div>
+    </Authenticator>
   );
 }
 
