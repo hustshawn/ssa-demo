@@ -7,3 +7,5 @@ _backend.tf
 .lock.info
 
 __pycache__
+
+.vscode
