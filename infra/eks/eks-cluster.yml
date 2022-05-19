@@ -4,8 +4,21 @@ metadata:
   name: ssa-demo
   region: ap-southeast-1
   version: "1.21"
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: backend-app
+      namespace: default
+      labels: {aws-usage: "application"}
+    attachPolicyARNs:
+    # - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    - "arn:aws:iam::414879998402:policy/backend-app-s3-write"
+    roleName: backend-app-irsa
+    roleOnly: true
+
 managedNodeGroups:
-  - name: test
+  - name: ssa-demo-ng01
     minSize: 2
     maxSize: 4
     desiredCapacity: 2
