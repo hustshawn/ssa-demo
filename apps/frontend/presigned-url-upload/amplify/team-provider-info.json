@@ -10,6 +10,11 @@
       "StackName": "amplify-ssademofrontend-dev-162803",
       "StackId": "arn:aws:cloudformation:ap-southeast-1:414879998402:stack/amplify-ssademofrontend-dev-162803/9aa263b0-d74d-11ec-9350-0696c6553af6",
       "AmplifyAppId": "dl2ayd4qm9t6m"
+    },
+    "categories": {
+      "auth": {
+        "ssademofrontend9cdd6fa2": {}
+      }
     }
   }
 }
