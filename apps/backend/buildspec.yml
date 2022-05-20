@@ -8,7 +8,7 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-      - which kustomize
+      - pwd && ls -ltrah
   build:
     commands:
       - echo Build started on `date`
@@ -32,5 +32,5 @@ phases:
       - aws eks update-kubeconfig --name $CLUSTER_NAME
       - kubectl version --short
       - cd k8s/overlays/prod
-      - kustomize edit set image backend-image=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - ./kustomize edit set image backend-image=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - kubectl kustomize .
