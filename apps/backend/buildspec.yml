@@ -41,4 +41,4 @@ phases:
       - kustomize build .
       - cd k8s/overlays/prod
       - kustomize edit set image backend-image=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      # - kubectl kustomize .
+      - kustomize build . | kubectl apply -f -
