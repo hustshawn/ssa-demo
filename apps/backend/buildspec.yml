@@ -12,8 +12,9 @@ phases:
       - mv kustomize /codebuild/user/bin
       - pwd && ls -ltrah
       - echo $PATH
+      - which kustomize
       - cd k8s/overlays/prod
-      - ./kustomize edit set image backend-image=$TARGET_IMAGE
+      - kustomize edit set image backend-image=$TARGET_IMAGE
       - kubectl kustomize .
   build:
     commands:
