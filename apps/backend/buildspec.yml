@@ -10,7 +10,7 @@ phases:
       - TARGET_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
       - mv kustomize /codebuild/user/bin
-      - kustomize verion --short
+      - kustomize version --short
       - kubectl version
       - printenv
       - cd k8s/overlays/prod
