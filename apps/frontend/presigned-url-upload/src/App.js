@@ -5,7 +5,7 @@ import '@aws-amplify/ui-react/styles.css';
 
 const App = () => {
 
-  let backendHost = "http://a33a0c6bb7ec74f07a311e6cb5023499-987884991.ap-southeast-1.elb.amazonaws.com:5000"
+  let backendHost = "https://api.hustshawn.com"
   if (process.env.NODE_ENV !== 'production') {
     backendHost = "http://localhost:8088"
   }
