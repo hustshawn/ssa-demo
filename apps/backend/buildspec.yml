@@ -1,6 +1,17 @@
 version: 0.2
 
 phases:
+
+  install:
+    commands:
+      - echo "Install kustomize"
+      - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+      - mv kustomize /codebuild/user/bin
+      - kustomize version --short
+      - echo "Update kubectl version to v1.21.12..."
+      - curl -LO https://dl.k8s.io/release/v1.21.12/bin/linux/amd64/kubectl && chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+      - kubectl version --short --client
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -8,13 +19,6 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - TARGET_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-      - mv kustomize /codebuild/user/bin
-      - kustomize version --short
-      - which kubectl
-      - echo "Update kubectl version to v1.21.12..."
-      - curl -LO https://dl.k8s.io/release/v1.21.12/bin/linux/amd64/kubectl && chmod +x kubectl
-      - mv kubectl /usr/local/bin/
   build:
     commands:
       - echo Build started on `date`
