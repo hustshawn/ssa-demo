@@ -12,13 +12,9 @@ phases:
       - mv kustomize /codebuild/user/bin
       - kustomize version --short
       - which kubectl
-      - echo Update kubectl version to 1.21
+      - echo "Update kubectl version to v1.21.12..."
       - curl -LO https://dl.k8s.io/release/v1.21.12/bin/linux/amd64/kubectl && chmod +x kubectl
       - mv kubectl /usr/local/bin/
-      - echo Test kustomize
-      - cd k8s/overlays/prod
-      - kustomize edit set image backend-image=$TARGET_IMAGE
-      - kubectl kustomize .
   build:
     commands:
       - echo Build started on `date`
@@ -41,8 +37,10 @@ phases:
       - echo "Update Kube Config"
       - aws eks update-kubeconfig --name $CLUSTER_NAME
       - kubectl version --short
-      # - cd k8s/overlays/prod
-      # - kustomize edit set image backend-image=$TARGET_IMAGE
-      # - kubectl kustomize .
-      # - kustomize build .
+      - cd k8s/overlays/prod
+      - echo "Update image tag"
+      - kustomize edit set image backend-image=$TARGET_IMAGE
+      - kubectl kustomize .
+      - echo "Deploy manifests..."
+      - kubectl apply -k .
       # - kustomize build . | kubectl apply -f -
