@@ -1,0 +1,7 @@
+resources:
+  - ../../base
+
+images:
+- name: backend-image
+  newName: 414879998402.dkr.ecr.ap-southeast-1.amazonaws.com/ssa-demo-backend
+  newTag: 52c4fbb
