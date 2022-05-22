@@ -101,7 +101,7 @@ const App = () => {
     <Authenticator>
     <div className="App">
       <div style={styles.container}>
-        <h2>Image Resizer Live Demo </h2>
+        <h2>Image Resizer Live Demo v2</h2>
         <label>Upload Image: </label>
         <input id="image" type="file" accept="image/*" onChange={handleImportImage} />
         <h3>Original Image Preview</h3>
