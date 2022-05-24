@@ -40,7 +40,7 @@ managedNodeGroups:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
         - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-fargateProfiles:
-  - name: ssa-demo-fargate-profile
-    selectors:
-      - namespace: fargate-ns
+# fargateProfiles:
+#   - name: ssa-demo-fargate-profile
+#     selectors:
+#       - namespace: fargate-ns
