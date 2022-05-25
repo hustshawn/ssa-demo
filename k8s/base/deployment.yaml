@@ -45,11 +45,11 @@ spec:
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            foo: backend
+            app: backend
       # if want to spread across the node as well
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            foo: backend
+            app: backend
