@@ -1,14 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    deployment.kubernetes.io/revision: "1"
   labels:
     app: backend
   name: backend-app
   namespace: default
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -24,7 +21,6 @@ spec:
     spec:
       containers:
       - name: backend
-        # image: 414879998402.dkr.ecr.ap-southeast-1.amazonaws.com/ssa-demo-backend:52c4fbb
         image: backend-image
         imagePullPolicy: Always
         command:
@@ -35,12 +31,25 @@ spec:
           protocol: TCP
         resources: 
           requests:
-            cpu: 500m
+            cpu: 250m
             memory: 512Mi
           limits:
-            cpu: 1
+            cpu: 500m
             memory: 512Mi
       restartPolicy: Always
       serviceAccountName: backend-app
-      imagePullSecrets: 
-      - name: ecr-login
+      # ensure evenly spread across multi-AZ
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            foo: backend
+      # if want to spread across the node as well
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            foo: backend
