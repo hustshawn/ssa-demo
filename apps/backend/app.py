@@ -17,7 +17,7 @@ S3_GET_SIGNED_URL_EXPIRES_IN = os.getenv('IMAGE_DOWNLOAD_EXPIRES_IN', 120)
 
 @app.route("/")
 def hello_world():
-    return "<p>SSA Demo, image to s3 handler backend. Hello world!</p>"
+    return "<p>SSA Demo, image to s3 handler backend. Hello world! V2</p>"
 
 @app.route("/requestUpload/<img_name>")
 def upload(img_name):
